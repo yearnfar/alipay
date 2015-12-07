@@ -7,7 +7,7 @@ import (
 
 // 支付表单
 
-func BuildRequestForm(config Config, params map[string]string, method, buttonName string) {
+func BuildHttpForm(config Config, params map[string]string, method, buttonName string) (form string, err error) {
 	if params["out_trade_no"] == "" {
 		err = errors.New("订单号不能为空")
 		return
@@ -30,18 +30,24 @@ func BuildRequestForm(config Config, params map[string]string, method, buttonNam
 	params["sign_type"] = config.SignType
 	params["sign"] = makeSign(params, config.Key)
 
-	values = url.Values{}
+	form := "<form id='alipaysubmit' name='alipaysubmit' action='""' method='"+method+"'>"
 	for key, val := range params {
-		values.Add(key, val)
-	}
+        form += fmt.Sprintf("<input type='hidden' name='"%s"' value='"%s"'/>", key, val)
+    }
 
-	query := values.Encode()
+	//submit按钮控件请不要含有name属性
+    form += "<input type='submit' value='".$button_name."'></form>";
+	form += "<script>document.forms['alipaysubmit'].submit();</script>";
+		
+	return form;
 }
 
 func Notify(request *http.Request) (resp NotifyResponse, err error) {
+	
 	return
 }
 
 func Return(request *http.Request) (resp NotifyResponse, err error) {
+	
 	return
 }
